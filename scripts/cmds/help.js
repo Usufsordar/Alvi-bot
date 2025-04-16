@@ -3,23 +3,25 @@ const axios = require("axios");
 const path = require("path");
 const { getPrefix } = global.utils;
 const { commands, aliases } = global.GoatBot;
-const doNotDelete = "[ 🐐 | Goat Bot V2 ]";
+const doNotDelete = "[ ✨ | Goat Bot V2.0]";
 /**
-* @author NTKhang
+* @author aminul Sorder
 * @author: do not delete it
 * @message if you delete or edit it you will get a global ban
+* @modified by: [Your Name]
+* @description Enhanced help command with better formatting and visuals
 */
 
 module.exports = {
 	config: {
 		name: "help",
-		version: "1.21",
-		author: "NTKhang",
+		version: "1.22",
+		author: "Aminul sordar ",
 		countDown: 5,
 		role: 0,
 		description: {
-			vi: "Xem cách sử dụng của các lệnh",
-			en: "View command usage"
+			vi: "Xem cách sử dụng của các lệnh - Phiên bản nâng cao",
+			en: "View command usage - Enhanced version"
 		},
 		category: "info",
 		guide: {
@@ -42,123 +44,129 @@ module.exports = {
 			help: "╭─────────────⭓"
 				+ "\n%1"
 				+ "\n├─────⭔"
-				+ "\n│ Trang [ %2/%3 ]"
-				+ "\n│ Hiện tại bot có %4 lệnh có thể sử dụng"
-				+ "\n│ » Gõ %5help <số trang> để xem danh sách các lệnh"
-				+ "\n│ » Gõ %5help để xem chi tiết cách sử dụng lệnh đó"
+				+ "\n│ 🌟 Trang [ %2/%3 ]"
+				+ "\n│ 🤖 Hiện tại bot có %4 lệnh có thể sử dụng"
+				+ "\n│ 📌 » Gõ %5help <số trang> để xem danh sách các lệnh"
+				+ "\n│ 📌 » Gõ %5help <tên lệnh> để xem chi tiết cách sử dụng"
 				+ "\n├────────⭔"
-				+ "\n│ %6"
+				+ "\n│ ✨ %6"
 				+ "\n╰─────────────⭓",
 			help2: "%1├───────⭔"
-				+ "\n│ » Hiện tại bot có %2 lệnh có thể sử dụng"
-				+ "\n│ » Gõ %3help <tên lệnh> để xem chi tiết cách sử dụng lệnh đó"
-				+ "\n│ %4"
+				+ "\n│ 📌 Hiện tại bot có %2 lệnh có thể sử dụng"
+				+ "\n│ 📌 Gõ %3help <tên lệnh> để xem chi tiết cách sử dụng"
+				+ "\n│ ✨ %4"
 				+ "\n╰─────────────⭓",
-			commandNotFound: "Lệnh \"%1\" không tồn tại",
-			getInfoCommand: "╭── NAME ────⭓"
+			commandNotFound: "⚠️ Lệnh \"%1\" không tồn tại",
+			getInfoCommand: "╭── 🎯 TÊN LỆNH ────⭓"
 				+ "\n│ %1"
-				+ "\n├── INFO"
-				+ "\n│ Mô tả: %2"
-				+ "\n│ Các tên gọi khác: %3"
-				+ "\n│ Các tên gọi khác trong nhóm bạn: %4"
-				+ "\n│ Version: %5"
-				+ "\n│ Role: %6"
-				+ "\n│ Thời gian mỗi lần dùng lệnh: %7s"
-				+ "\n│ Author: %8"
-				+ "\n├── USAGE"
+				+ "\n├── ℹ️ THÔNG TIN"
+				+ "\n│ 📝 Mô tả: %2"
+				+ "\n│ 🔤 Tên gọi khác: %3"
+				+ "\n│ 🏷️ Tên gọi khác trong nhóm: %4"
+				+ "\n│ 🏷️ Version: %5"
+				+ "\n│ 🔒 Role: %6"
+				+ "\n│ ⏱️ Thời gian chờ: %7s"
+				+ "\n│ 👤 Tác giả: %8"
+				+ "\n├── 📖 CÁCH DÙNG"
 				+ "\n│%9"
-				+ "\n├── NOTES"
-				+ "\n│ Nội dung bên trong <XXXXX> là có thể thay đổi"
-				+ "\n│ Nội dung bên trong [a|b|c] là a hoặc b hoặc c"
+				+ "\n├── 📌 GHI CHÚ"
+				+ "\n│ <XXXXX> - Nội dung có thể thay đổi"
+				+ "\n│ [a|b|c] - Chọn a hoặc b hoặc c"
 				+ "\n╰──────⭔",
-			onlyInfo: "╭── INFO ────⭓"
-				+ "\n│ Tên lệnh: %1"
-				+ "\n│ Mô tả: %2"
-				+ "\n│ Các tên gọi khác: %3"
-				+ "\n│ Các tên gọi khác trong nhóm bạn: %4"
-				+ "\n│ Version: %5"
-				+ "\n│ Role: %6"
-				+ "\n│ Thời gian mỗi lần dùng lệnh: %7s"
-				+ "\n│ Author: %8"
+			onlyInfo: "╭── ℹ️ THÔNG TIN ────⭓"
+				+ "\n│ 🎯 Tên lệnh: %1"
+				+ "\n│ 📝 Mô tả: %2"
+				+ "\n│ 🔤 Tên gọi khác: %3"
+				+ "\n│ 🏷️ Tên gọi khác trong nhóm: %4"
+				+ "\n│ 🏷️ Version: %5"
+				+ "\n│ 🔒 Role: %6"
+				+ "\n│ ⏱️ Thời gian chờ: %7s"
+				+ "\n│ 👤 Tác giả: %8"
 				+ "\n╰─────────────⭓",
-			onlyUsage: "╭── USAGE ────⭓"
+			onlyUsage: "╭── 📖 CÁCH DÙNG ────⭓"
 				+ "\n│%1"
 				+ "\n╰─────────────⭓",
-			onlyAlias: "╭── ALIAS ────⭓"
-				+ "\n│ Các tên gọi khác: %1"
-				+ "\n│ Các tên gọi khác trong nhóm bạn: %2"
+			onlyAlias: "╭── 🔤 TÊN GỌI KHÁC ────⭓"
+				+ "\n│ 📌 Tên gọi khác: %1"
+				+ "\n│ 🏷️ Tên gọi khác trong nhóm: %2"
 				+ "\n╰─────────────⭓",
-			onlyRole: "╭── ROLE ────⭓"
+			onlyRole: "╭── 🔒 QUYỀN HẠN ────⭓"
 				+ "\n│%1"
 				+ "\n╰─────────────⭓",
 			doNotHave: "Không có",
-			roleText0: "0 (Tất cả người dùng)",
-			roleText1: "1 (Quản trị viên nhóm)",
-			roleText2: "2 (Admin bot)",
-			roleText0setRole: "0 (set role, tất cả người dùng)",
-			roleText1setRole: "1 (set role, quản trị viên nhóm)",
-			pageNotFound: "Trang %1 không tồn tại"
+			roleText0: "👶 0 (Tất cả người dùng)",
+			roleText1: "👮 1 (Quản trị viên nhóm)",
+			roleText2: "👑 2 (Admin bot)",
+			roleText0setRole: "👶 0 (Đã đặt role, tất cả người dùng)",
+			roleText1setRole: "👮 1 (Đã đặt role, quản trị viên nhóm)",
+			pageNotFound: "⚠️ Trang %1 không tồn tại"
 		},
 		en: {
 			help: "╭─────────────⭓"
 				+ "\n%1"
 				+ "\n├─────⭔"
-				+ "\n│ Page [ %2/%3 ]"
-				+ "\n│ Currently, the bot has %4 commands that can be used"
-				+ "\n│ » Type %5help <page> to view the command list"
-				+ "\n│ » Type %5help to view the details of how to use that command"
+				+ "\n│ 🌟 Page [ %2/%3 ]"
+				+ "\n│ 🤖 Currently, the bot has %4 commands available"
+				+ "\n│ 📌 » Type %5help <page> to view command list"
+				+ "\n│ 📌 » Type %5help <command> for details"
 				+ "\n├────────⭔"
-				+ "\n│ %6"
-				+ "\n╰─────────────⭓",
+				+ "\n│ ✨ %6"
+				 + "\n├─── OWNER INFO ───⭔"
+  + "\n│ 👑 Name: Aminul Sordar"
+  + "\n│ 📩 FB: https://fb.com/profile.php?id=100071880593545"
+  + "\n╰─────────────────⭓",
 			help2: "%1├───────⭔"
-				+ "\n│ » Currently, the bot has %2 commands that can be used"
-				+ "\n│ » Type %3help <command name> to view the details of how to use that command"
-				+ "\n│ %4"
-				+ "\n╰─────────────⭓",
-			commandNotFound: "Command \"%1\" does not exist",
-			getInfoCommand: "╭── NAME ────⭓"
+				+ "\n│ 📌 Currently %2 commands available"
+				+ "\n│ 📌 Type %3help <command> for details"
+				+ "\n│ ✨ %4"
+				+ "\n├─── OWNER INFO ───⭔"
+  + "\n│ 👑 Name: Aminul Sordar"
+  + "\n│ 📩 FB: https://fb.com/profile.php?id=100071880593545"
+  + "\n╰─────────────────⭓",
+			commandNotFound: "⚠️ Command \"%1\" not found",
+			getInfoCommand: "╭── 🎯 COMMAND NAME ────⭓"
 				+ "\n│ %1"
-				+ "\n├── INFO"
-				+ "\n│ Description: %2"
-				+ "\n│ Other names: %3"
-				+ "\n│ Other names in your group: %4"
-				+ "\n│ Version: %5"
-				+ "\n│ Role: %6"
-				+ "\n│ Time per command: %7s"
-				+ "\n│ Author: %8"
-				+ "\n├── USAGE"
+				+ "\n├── ℹ️ INFO"
+				+ "\n│ 📝 Description: %2"
+				+ "\n│ 🔤 Aliases: %3"
+				+ "\n│ 🏷️ Group Aliases: %4"
+				+ "\n│ 🏷️ Version: %5"
+				+ "\n│ 🔒 Role: %6"
+				+ "\n│ ⏱️ Cooldown: %7s"
+				+ "\n│ 👤 Author: %8"
+				+ "\n├── 📖 USAGE"
 				+ "\n│%9"
-				+ "\n├── NOTES"
-				+ "\n│ The content inside <XXXXX> can be changed"
-				+ "\n│ The content inside [a|b|c] is a or b or c"
+				+ "\n├── 📌 NOTES"
+				+ "\n│ <XXXXX> - Replaceable content"
+				+ "\n│ [a|b|c] - Choose a or b or c"
 				+ "\n╰──────⭔",
-			onlyInfo: "╭── INFO ────⭓"
-				+ "\n│ Command name: %1"
-				+ "\n│ Description: %2"
-				+ "\n│ Other names: %3"
-				+ "\n│ Other names in your group: %4"
-				+ "\n│ Version: %5"
-				+ "\n│ Role: %6"
-				+ "\n│ Time per command: %7s"
-				+ "\n│ Author: %8"
+			onlyInfo: "╭── ℹ️ INFO ────⭓"
+				+ "\n│ 🎯 Command: %1"
+				+ "\n│ 📝 Description: %2"
+				+ "\n│ 🔤 Aliases: %3"
+				+ "\n│ 🏷️ Group Aliases: %4"
+				+ "\n│ 🏷️ Version: %5"
+				+ "\n│ 🔒 Role: %6"
+				+ "\n│ ⏱️ Cooldown: %7s"
+				+ "\n│ 👤 Author: %8"
 				+ "\n╰─────────────⭓",
-			onlyUsage: "╭── USAGE ────⭓"
+			onlyUsage: "╭── 📖 USAGE ────⭓"
 				+ "\n│%1"
 				+ "\n╰─────────────⭓",
-			onlyAlias: "╭── ALIAS ────⭓"
-				+ "\n│ Other names: %1"
-				+ "\n│ Other names in your group: %2"
+			onlyAlias: "╭── 🔤 ALIASES ────⭓"
+				+ "\n│ 📌 Global Aliases: %1"
+				+ "\n│ 🏷️ Group Aliases: %2"
 				+ "\n╰─────────────⭓",
-			onlyRole: "╭── ROLE ────⭓"
+			onlyRole: "╭── 🔒 ROLE ────⭓"
 				+ "\n│%1"
 				+ "\n╰─────────────⭓",
-			doNotHave: "Do not have",
-			roleText0: "0 (All users)",
-			roleText1: "1 (Group administrators)",
-			roleText2: "2 (Admin bot)",
-			roleText0setRole: "0 (set role, all users)",
-			roleText1setRole: "1 (set role, group administrators)",
-			pageNotFound: "Page %1 does not exist"
+			doNotHave: "None",
+			roleText0: "👶 0 (All users)",
+			roleText1: "👮 1 (Group admins)",
+			roleText2: "👑 2 (Bot admin)",
+			roleText0setRole: "👶 0 (Custom role, all users)",
+			roleText1setRole: "👮 1 (Custom role, group admins)",
+			pageNotFound: "⚠️ Page %1 doesn't exist"
 		}
 	},
 
@@ -177,9 +185,8 @@ module.exports = {
 			sortHelp = "name";
 		const commandName = (args[0] || "").toLowerCase();
 		let command = commands.get(commandName) || commands.get(aliases.get(commandName));
-		const aliasesData = threadData.data.aliases || {
-			// uid: ["userid", "id"]
-		};
+		const aliasesData = threadData.data.aliases || {};
+
 		if (!command) {
 			for (const cmdName in aliasesData) {
 				if (aliasesData[cmdName].includes(commandName)) {
@@ -191,10 +198,6 @@ module.exports = {
 
 		if (!command) {
 			const globalAliasesData = await globalData.get('setalias', 'data', []);
-			// [{
-			// 	commandName: "uid",
-			// 	aliases: ["uid", "id]
-			// }]
 			for (const item of globalAliasesData) {
 				if (item.aliases.includes(commandName)) {
 					command = commands.get(item.commandName);
@@ -203,62 +206,81 @@ module.exports = {
 			}
 		}
 
-		// ———————————————— LIST ALL COMMAND ——————————————— //
+		// ———————————————— LIST ALL COMMANDS ——————————————— //
 		if (!command && !args[0] || !isNaN(args[0])) {
 			const arrayInfo = [];
 			let msg = "";
 			if (sortHelp == "name") {
 				const page = parseInt(args[0]) || 1;
 				const numberOfOnePage = 30;
+				
+				// Get all commands
 				for (const [name, value] of commands) {
 					if (value.config.role > 1 && role < value.config.role)
 						continue;
+					
 					let describe = name;
 					let description;
 					const descriptionCustomLang = customLang[name]?.description;
+					
 					if (descriptionCustomLang != undefined)
 						description = checkLangObject(descriptionCustomLang, langCode);
 					else if (value.config.description)
 						description = checkLangObject(value.config.description, langCode);
+					
 					if (description)
 						describe += `: ${cropContent(description.charAt(0).toUpperCase() + description.slice(1), 50)}`;
+					
 					arrayInfo.push({
 						data: describe,
 						priority: value.priority || 0
 					});
 				}
 
-				arrayInfo.sort((a, b) => a.data - b.data); // sort by name
+				// Sort commands
+				arrayInfo.sort((a, b) => a.data.localeCompare(b.data)); // sort by name
 				arrayInfo.sort((a, b) => a.priority > b.priority ? -1 : 1); // sort by priority
+				
+				// Pagination
 				const { allPage, totalPage } = global.utils.splitPage(arrayInfo, numberOfOnePage);
 				if (page < 1 || page > totalPage)
 					return message.reply(getLang("pageNotFound", page));
 
+				// Format the message
 				const returnArray = allPage[page - 1] || [];
 				const startNumber = (page - 1) * numberOfOnePage + 1;
 				msg += (returnArray || []).reduce((text, item, index) => text += `│ ${index + startNumber}${index + startNumber < 10 ? " " : ""}. ${item.data}\n`, '').slice(0, -1);
+				
 				await message.reply(getLang("help", msg, page, totalPage, commands.size, prefix, doNotDelete));
 			}
 			else if (sortHelp == "category") {
+				// Group commands by category
 				for (const [, value] of commands) {
 					if (value.config.role > 1 && role < value.config.role)
-						continue; // if role of command > role of user => skip
-					const indexCategory = arrayInfo.findIndex(item => (item.category || "NO CATEGORY") == (value.config.category?.toLowerCase() || "NO CATEGORY"));
+						continue;
+					
+					const category = value.config.category?.toLowerCase() || "uncategorized";
+					const indexCategory = arrayInfo.findIndex(item => item.category == category);
 
 					if (indexCategory != -1)
 						arrayInfo[indexCategory].names.push(value.config.name);
 					else
 						arrayInfo.push({
-							category: value.config.category.toLowerCase(),
+							category,
 							names: [value.config.name]
 						});
 				}
-				arrayInfo.sort((a, b) => (a.category < b.category ? -1 : 1));
+				
+				// Sort categories alphabetically
+				arrayInfo.sort((a, b) => a.category.localeCompare(b.category));
+				
+				// Format the message
 				arrayInfo.forEach((data, index) => {
 					const categoryUpcase = `${index == 0 ? `╭` : `├`}─── ${data.category.toUpperCase()} ${index == 0 ? "⭓" : "⭔"}`;
-					data.names = data.names.sort().map(item => item = `│ ${item}`);
+					data.names = data.names.sort().map(item => `│ ${item}`);
 					msg += `${categoryUpcase}\n${data.names.join("\n")}\n`;
 				});
+				
 				message.reply(getLang("help2", msg, commands.size, prefix, doNotDelete));
 			}
 		}
@@ -266,28 +288,31 @@ module.exports = {
 		else if (!command && args[0]) {
 			return message.reply(getLang("commandNotFound", args[0]));
 		}
-		// ————————————————— INFO COMMAND ————————————————— //
+		// ————————————————— COMMAND INFO ————————————————— //
 		else {
 			const formSendMessage = {};
 			const configCommand = command.config;
 
+			// Get command guide
 			let guide = configCommand.guide?.[langCode] || configCommand.guide?.["en"];
 			if (guide == undefined)
 				guide = customLang[configCommand.name]?.guide?.[langCode] || customLang[configCommand.name]?.guide?.["en"];
 
-			guide = guide || {
-				body: ""
-			};
+			guide = guide || { body: "" };
 			if (typeof guide == "string")
 				guide = { body: guide };
+				
+			// Replace placeholders in guide
 			const guideBody = guide.body
 				.replace(/\{prefix\}|\{p\}/g, prefix)
 				.replace(/\{name\}|\{n\}/g, configCommand.name)
 				.replace(/\{pn\}/g, prefix + configCommand.name);
 
+			// Get aliases information
 			const aliasesString = configCommand.aliases ? configCommand.aliases.join(", ") : getLang("doNotHave");
 			const aliasesThisGroup = threadData.data.aliases ? (threadData.data.aliases[configCommand.name] || []).join(", ") : getLang("doNotHave");
 
+			// Get role information
 			let roleOfCommand = configCommand.role;
 			let roleIsSet = false;
 			if (threadData.data.setRole?.[configCommand.name]) {
@@ -301,17 +326,16 @@ module.exports = {
 					(roleIsSet ? getLang("roleText1setRole") : getLang("roleText1")) :
 					getLang("roleText2");
 
+			// Get command description
 			const author = configCommand.author;
 			const descriptionCustomLang = customLang[configCommand.name]?.description;
 			let description = checkLangObject(configCommand.description, langCode);
 			if (description == undefined)
-				if (descriptionCustomLang != undefined)
-					description = checkLangObject(descriptionCustomLang, langCode);
-				else
-					description = getLang("doNotHave");
+				description = descriptionCustomLang ? checkLangObject(descriptionCustomLang, langCode) : getLang("doNotHave");
 
-			let sendWithAttachment = false; // check subcommand need send with attachment or not
+			let sendWithAttachment = false;
 
+			// Handle different help options
 			if (args[1]?.match(/^-g|guide|-u|usage$/)) {
 				formSendMessage.body = getLang("onlyUsage", guideBody.split("\n").join("\n│"));
 				sendWithAttachment = true;
@@ -333,6 +357,7 @@ module.exports = {
 					author || ""
 				);
 			else {
+				// Full command info
 				formSendMessage.body = getLang(
 					"getInfoCommand",
 					configCommand.name,
@@ -348,6 +373,7 @@ module.exports = {
 				sendWithAttachment = true;
 			}
 
+			// Handle attachments if needed
 			if (sendWithAttachment && guide.attachment) {
 				if (typeof guide.attachment == "object" && !Array.isArray(guide.attachment)) {
 					const promises = [];
@@ -357,12 +383,15 @@ module.exports = {
 						const pathFile = path.normalize(keyPathFile);
 
 						if (!fs.existsSync(pathFile)) {
+							// Create directory structure if needed
 							const cutDirPath = path.dirname(pathFile).split(path.sep);
 							for (let i = 0; i < cutDirPath.length; i++) {
-								const pathCheck = `${cutDirPath.slice(0, i + 1).join(path.sep)}${path.sep}`; // create path
+								const pathCheck = `${cutDirPath.slice(0, i + 1).join(path.sep)}${path.sep}`;
 								if (!fs.existsSync(pathCheck))
-									fs.mkdirSync(pathCheck); // create folder
+									fs.mkdirSync(pathCheck);
 							}
+							
+							// Download the file
 							const getFilePromise = axios.get(guide.attachment[keyPathFile], { responseType: 'arraybuffer' })
 								.then(response => {
 									fs.writeFileSync(pathFile, Buffer.from(response.data));
@@ -406,4 +435,4 @@ function cropContent(content, max) {
 		content = content + "...";
 	}
 	return content;
-}
+				    }
