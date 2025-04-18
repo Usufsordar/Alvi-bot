@@ -28,6 +28,11 @@ module.exports = {
 		const minutes = Math.floor((uptime % 3600) / 60);
 		const prefix = global.utils.getPrefix(threadID);
 
+		const cacheDir = path.join(__dirname, "cache");
+		if (!fs.existsSync(cacheDir)) {
+			fs.mkdirSync(cacheDir);
+		}
+
 		// --- Welcome Member ---
 		if (logMessageType === "log:subscribe") {
 			const botJoin = logMessageData.addedParticipants.find(p => p.userFbId == api.getCurrentUserID());
@@ -49,13 +54,11 @@ module.exports = {
 			const userName = newUser.fullName;
 			const userID = newUser.userFbId;
 
-			// Welcome Image URL
-			const imageUrlWelcome = "https://i.ibb.co.com/9mVK24DX/welcome-image.jpg";
-			const imagePathWelcome = path.join(__dirname, "cache", "welcome.jpg");
+			const welcomeImgURL = "https://i.ibb.co.com/9mVK24DX/welcome-image.jpg";
+			const welcomeImgPath = path.join(cacheDir, "welcome.jpg");
 
-			// Download and save the image
-			const responseWelcome = await axios.get(imageUrlWelcome, { responseType: "stream" });
-			const writerWelcome = fs.createWriteStream(imagePathWelcome);
+			const responseWelcome = await axios.get(welcomeImgURL, { responseType: "stream" });
+			const writerWelcome = fs.createWriteStream(welcomeImgPath);
 			responseWelcome.data.pipe(writerWelcome);
 
 			await new Promise((resolve, reject) => {
@@ -83,7 +86,7 @@ module.exports = {
 
 			return message.send({
 				body: welcomeMsg,
-				attachment: fs.createReadStream(imagePathWelcome),
+				attachment: fs.createReadStream(welcomeImgPath),
 				mentions: [{ tag: userName, id: userID }]
 			});
 		}
@@ -96,13 +99,11 @@ module.exports = {
 			const leftUser = await api.getUserInfo(leftID);
 			const name = leftUser[leftID]?.name || "কেউ";
 
-			// Leave Image URL
-			const imageUrlLeave = "https://i.ibb.co.com/p6wznzgc/leave-image.jpg";
-			const imagePathLeave = path.join(__dirname, "cache", "leave.jpg");
+			const leaveImgURL = "https://i.ibb.co.com/p6wznzgc/leave-image.jpg";
+			const leaveImgPath = path.join(cacheDir, "leave.jpg");
 
-			// Download leave image
-			const responseLeave = await axios.get(imageUrlLeave, { responseType: "stream" });
-			const writerLeave = fs.createWriteStream(imagePathLeave);
+			const responseLeave = await axios.get(leaveImgURL, { responseType: "stream" });
+			const writerLeave = fs.createWriteStream(leaveImgPath);
 			responseLeave.data.pipe(writerLeave);
 
 			await new Promise((resolve, reject) => {
@@ -123,52 +124,38 @@ ${name} গ্রুপ ছেড়ে চলে গেল...
 
 			return message.send({
 				body: byeMsg,
-				attachment: fs.createReadStream(imagePathLeave)
+				attachment: fs.createReadStream(leaveImgPath)
 			});
 		}
 
-		// --- Group Name Changed ---
+		// --- Other Events (same as before) ---
 		if (logMessageType === "log:thread-name") {
 			const newName = logMessageData.name;
 			return message.send(`⚠️ গ্রুপের নাম এখন "${newName}" রাখা হয়েছে! দারুণ নাম!`);
 		}
-
-		// --- Nickname Changed ---
 		if (logMessageType === "log:thread-nickname") {
 			const newNick = logMessageData.nickname;
 			const changedFor = logMessageData.participant_id;
 			return message.send(`${changedFor} এর নতুন nickname: "${newNick}" রাখা হয়েছে!`);
 		}
-
-		// --- Emoji Changed ---
 		if (logMessageType === "log:thread-icon") {
 			const emoji = logMessageData.icon;
 			return message.send(`গ্রুপের ইমোজি এখন: ${emoji}`);
 		}
-
-		// --- Call Started ---
 		if (logMessageType === "log:call") {
 			return message.send("📞 কল শুরু হয়েছে! সবাই জয়েন হও ভাইরা!");
 		}
-
-		// --- Call Ended ---
 		if (logMessageType === "log:call-ended") {
 			const dur = logMessageData.callDuration;
 			const m = Math.floor(dur / 60);
 			const s = dur % 60;
 			return message.send(`📴 কল শেষ! মোট সময়: ${m} মিনিট ${s} সেকেন্ড!`);
 		}
-
-		// --- Reaction Detection (😂) ---
 		if (type === "message_reaction" && reaction === "😂") {
 			return message.send("মজা পাইলা বুঝি?");
 		}
-
-		// --- Tag All Members if @everyone ---
 		if (type === "message" && body?.toLowerCase().includes("@everyone")) {
-			const mentions = threadInfo.participantIDs.map(id => ({
-				id, tag: " "
-			}));
+			const mentions = threadInfo.participantIDs.map(id => ({ id, tag: " " }));
 			return message.send({
 				body: `@everyone বলেছেন! সবাই একবার দেখে নাও!`,
 				mentions
