@@ -1,4 +1,7 @@
 const { getTime } = global.utils;
+const axios = require("axios");
+const fs = require("fs");
+const path = require("path");
 
 module.exports = {
 	config: {
@@ -25,7 +28,7 @@ module.exports = {
 		const minutes = Math.floor((uptime % 3600) / 60);
 		const prefix = global.utils.getPrefix(threadID);
 
-		// --- Bot Added Message ---
+		// --- Welcome Member ---
 		if (logMessageType === "log:subscribe") {
 			const botJoin = logMessageData.addedParticipants.find(p => p.userFbId == api.getCurrentUserID());
 			if (botJoin) {
@@ -42,10 +45,23 @@ module.exports = {
 				return message.send(msg);
 			}
 
-			// --- Welcome Member ---
 			const newUser = logMessageData.addedParticipants[0];
 			const userName = newUser.fullName;
 			const userID = newUser.userFbId;
+
+			// Welcome Image URL
+			const imageUrlWelcome = "https://i.ibb.co.com/9mVK24DX/welcome-image.jpg";
+			const imagePathWelcome = path.join(__dirname, "cache", "welcome.jpg");
+
+			// Download and save the image
+			const responseWelcome = await axios.get(imageUrlWelcome, { responseType: "stream" });
+			const writerWelcome = fs.createWriteStream(imagePathWelcome);
+			responseWelcome.data.pipe(writerWelcome);
+
+			await new Promise((resolve, reject) => {
+				writerWelcome.on("finish", resolve);
+				writerWelcome.on("error", reject);
+			});
 
 			const welcomeMsg =
 `━━━━━━━━━━━━━━━━━━
@@ -67,6 +83,7 @@ module.exports = {
 
 			return message.send({
 				body: welcomeMsg,
+				attachment: fs.createReadStream(imagePathWelcome),
 				mentions: [{ tag: userName, id: userID }]
 			});
 		}
@@ -75,7 +92,39 @@ module.exports = {
 		if (logMessageType === "log:unsubscribe") {
 			const leftID = logMessageData.leftParticipantFbId;
 			if (leftID == api.getCurrentUserID()) return;
-			return message.send(`বাই বাই... কেউ গ্রুপ ছেড়ে চলে গেল! আবার দেখা হবে ইনশাআল্লাহ!`);
+
+			const leftUser = await api.getUserInfo(leftID);
+			const name = leftUser[leftID]?.name || "কেউ";
+
+			// Leave Image URL
+			const imageUrlLeave = "https://i.ibb.co.com/p6wznzgc/leave-image.jpg";
+			const imagePathLeave = path.join(__dirname, "cache", "leave.jpg");
+
+			// Download leave image
+			const responseLeave = await axios.get(imageUrlLeave, { responseType: "stream" });
+			const writerLeave = fs.createWriteStream(imagePathLeave);
+			responseLeave.data.pipe(writerLeave);
+
+			await new Promise((resolve, reject) => {
+				writerLeave.on("finish", resolve);
+				writerLeave.on("error", reject);
+			});
+
+			const byeMsg =
+`━━━━━━━━━━━━━━━━━━
+👋 সদস্য বিদায়
+━━━━━━━━━━━━━━━━━━
+
+${name} গ্রুপ ছেড়ে চলে গেল...
+
+আশা করি আবার দেখা হবে ইনশাআল্লাহ!
+
+━━━━━━━━━━━━━━━━━━`;
+
+			return message.send({
+				body: byeMsg,
+				attachment: fs.createReadStream(imagePathLeave)
+			});
 		}
 
 		// --- Group Name Changed ---
