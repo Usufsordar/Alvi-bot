@@ -1,128 +1,132 @@
-const os = require("os");
+const axios = require("axios");
+const fs = require("fs");
 const path = require("path");
+const os = require("os");
+const Canvas = require("canvas");
+const pidusage = require("pidusage");
 
-// Load config and package.json with proper path resolution
-let config, pkg;
-try {
-  config = require(path.join(__dirname, "../../config.json"));
-  pkg = require(path.join(__dirname, "../../package.json"));
-} catch (err) {
-  console.error("Failed to load config:", err);
-  config = {
-    OWNER: "AMINUL-SORDAR",
-    AGE: "18",
-    GENDER: "MALE",
-    nickNameBot: "𝐀𝐌𝐈𝐍𝐔𝐋-𝐁𝐎𝐓",
-    FACEBOOK: "https://www.facebook.com/br4nd.abir.your.next.bf.jan",
-    prefix: "#",
-    timeZone: "Asia/Dhaka",
-    database: { type: "sqlite" },
-    autoRestart: { time: 3600000 },
-    autoUptime: { enable: true }
-  };
-  pkg = { version: "N/A" };
-}
+const FONT_PATHS = {
+  avo: path.join(__dirname, "cache", "UTM-Avo.ttf"),
+  pheno: path.join(__dirname, "cache", "phenomicon.ttf"),
+  caviar: path.join(__dirname, "cache", "CaviarDreams.ttf")
+};
+
+// Register fonts
+Canvas.registerFont(FONT_PATHS.avo, { family: "Avo" });
+Canvas.registerFont(FONT_PATHS.pheno, { family: "Phenomicon" });
+Canvas.registerFont(FONT_PATHS.caviar, { family: "Caviar" });
+
+// Preload background image
+let cachedBG = null;
+Canvas.loadImage("https://i.ibb.co/gZDJmP98/blue-clouds-day-fluffy-53594.jpg")
+  .then(img => cachedBG = img)
+  .catch(err => console.error("Failed to load background:", err));
 
 module.exports = {
   config: {
-    name: "up",
-    aliases: ["uptime", "upt"],
-    version: "1.6",
-    author: "𝗔𝗺𝗶𝗻𝘂𝗹 𝗦𝗼𝗿𝗱𝗮𝗿",
+    name: "uptime",
+    aliases: ["up"],
+    version: "2.1",
+    author: "AminulDev",
     role: 0,
-    shortDescription: {
-      en: "Show bot uptime and system info"
-    },
-    longDescription: {
-      en: "Displays how long the bot has been running with detailed system info"
-    },
+    shortDescription: "Show bot uptime with styled panel",
+    longDescription: "Displays bot and system uptime with a stylish graphic and background.",
     category: "system",
-    guide: {
-      en: "{p}up"
-    }
+    guide: "{p}uptime"
   },
 
-  onStart: async function ({ message, threadsData }) {
+  onStart: async function ({ api, event }) {
     try {
-      // Uptime calculations
-      const uptime = os.uptime();
-      const days = Math.floor(uptime / (3600 * 24));
-      const hours = Math.floor((uptime % (3600 * 24)) / 3600);
-      const mins = Math.floor((uptime % 3600) / 60);
-      const seconds = Math.floor(uptime % 60);
-
-      // Date/time formatting
-      const currentDate = new Date();
-      const date = currentDate.toLocaleDateString("bn-BD", {
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-      });
-      const time = currentDate.toLocaleTimeString("bn-BD", {
-        timeZone: config.timeZone,
-        hour12: true
-      });
-
-      // System metrics
-      const ramUsage = Math.round(process.memoryUsage().rss / (1024 * 1024));
-      const totalMemory = Math.round(os.totalmem() / (1024 * 1024 * 1024));
-      const freeMemory = Math.round(os.freemem() / (1024 * 1024 * 1024));
-      const cpuModel = os.cpus()[0].model;
-      const cpuSpeed = os.cpus()[0].speed;
-
-      // Bot data
-      const allThreads = await threadsData.getAll();
-      const totalThreads = allThreads.length;
-
-      const response = `
-╭━━━[ 🛠️ 𝐔𝐏𝐓𝐈𝐌𝐄 - 𝐒𝐓𝐀𝐓𝐔𝐒 🛠️ ]━━━╮
-┃
-┃ ⏱️ আপটাইম: ${days} দিন, ${hours} ঘন্টা, ${mins} মিনিট, ${seconds} সেকেন্ড
-┃━━━━━━━━━━━━━━━━━━━━━━
-┃ 👑 𝗢𝗪𝗡𝗘𝗥: ${config.OWNER}
-┃ 🎂 বয়স: ${config.AGE}
-┃ ♂️ লিঙ্গ: ${config.GENDER}
-┃ 🤖 বট নাম: ${config.nickNameBot}
-┃ 📦 Version: ${pkg.version}
-┃ ⚙️ Prefix: ${config.prefix}
-┃
-┃ 🖥️ OS: ${os.platform()} ${os.release()}
-┃ 🧠 CPU: ${cpuModel} (${os.cpus().length} cores @ ${cpuSpeed}MHz)
-┃ 🏗️ Arch: ${os.arch()}
-┃
-┃ 💾 RAM: ${ramUsage} MB used / ${totalMemory} GB total
-┃ 📉 Free RAM: ${freeMemory} GB
-┃ 🧵 Active Threads: ${totalThreads}
-┃ ⏳ Process Uptime: ${Math.floor(process.uptime())}s
-┃
-┃ 🔄 Auto Restart: ${config.autoRestart.time ? "✅ Enabled" : "❌ Disabled"}
-┃ 🌐 Auto Uptime: ${config.autoUptime.enable ? "✅ Enabled" : "❌ Disabled"}
-┃ 💽 Database: ${config.database.type.toUpperCase()}
-┃
-┃ 🔗 Facebook: ${config.FACEBOOK}
-┃ 🕒 তারিখ: ${date}
-┃ ⏰ সময়: ${time}
-╰━━━━━━━━━━━━━━━━━━━━━━╯`;
-
-      // Attachment handling with fallback
-      let attachment;
-      try {
-        attachment = await global.utils.getStreamFromURL(
-          "https://i.ibb.co/dJsW5m00/Screenshot-2025-05-06-20-44-41-152-com-android-chrome-edit.jpg"
-        );
-      } catch (e) {
-        console.error("Image load error:", e);
-        attachment = null;
+      if (!cachedBG) {
+        return api.sendMessage("⚠️ Background not loaded yet. Try again shortly.", event.threadID);
       }
 
-      await message.reply({
-        body: response,
-        attachment: attachment
-      });
+      const timeStart = Date.now();
 
-    } catch (error) {
-      console.error("Uptime command error:", error);
-      await message.reply("❌ | An error occurred while processing the uptime command.");
+      // Uptime
+      const uptime = process.uptime();
+      const d = Math.floor(uptime / 86400);
+      const h = Math.floor((uptime % 86400) / 3600);
+      const m = Math.floor((uptime % 3600) / 60);
+      const s = Math.floor(uptime % 60);
+      const timeFormat = `${d}d ${h}h ${m}m ${s}s`;
+
+      // System stats
+      const usage = await pidusage(process.pid);
+      const memory = (usage.memory / 1024 / 1024).toFixed(2);
+      const cpu = usage.cpu.toFixed(1);
+      const chips = os.cpus()[0].model;
+      const speed = os.cpus()[0].speed;
+      const totalMem = (os.totalmem() / 1024 / 1024).toFixed(2);
+      const freeMem = (os.freemem() / 1024 / 1024).toFixed(2);
+      const usedMemPerc = ((os.freemem() * 100) / os.totalmem()).toFixed(1);
+      const totalUsers = global.data?.allUserID?.length || "N/A";
+      const totalThreads = global.data?.allThreadID?.length || "N/A";
+      const ping = Date.now() - timeStart;
+
+      // Canvas
+      const width = 750, height = 260;
+      const canvas = Canvas.createCanvas(width, height);
+      const ctx = canvas.getContext("2d");
+
+      // Background + overlay
+      ctx.drawImage(cachedBG, 0, 0, width, height);
+      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+      ctx.fillRect(0, 0, width, height);
+
+      // Text on image
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "32px Phenomicon";
+      ctx.fillText("Bot Uptime", 40, 60);
+
+      ctx.font = "28px Avo";
+      ctx.fillStyle = "#00ffff";
+      ctx.fillText(timeFormat, 40, 100);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "26px Phenomicon";
+      ctx.fillText("Memory Usage:", 40, 160);
+
+      ctx.font = "24px Avo";
+      ctx.fillStyle = "#00ff99";
+      ctx.fillText(`${memory} MB`, 220, 160);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "26px Phenomicon";
+      ctx.fillText("CPU Usage:", 40, 210);
+
+      ctx.font = "24px Avo";
+      ctx.fillStyle = "#ffff00";
+      ctx.fillText(`${cpu}%`, 220, 210);
+
+      // Save image
+      const imgPath = path.join(__dirname, "cache", `uptime-${Date.now()}.png`);
+      fs.writeFileSync(imgPath, canvas.toBuffer("image/png"));
+
+      // Message body
+      const msg = `☁️ 𝗕𝗼𝘁 𝗨𝗽𝘁𝗶𝗺𝗲 𝗥𝗲𝗽𝗼𝗿𝘁
+
+⏱️ Uptime: ${timeFormat}
+⚙️ CPU: ${chips}
+🚀 Speed: ${speed} MHz
+🧠 RAM: ${freeMem} / ${totalMem} MB (${usedMemPerc}% free)
+
+👤 Total Users: ${totalUsers}
+👥 Total Groups: ${totalThreads}
+⚡ CPU Usage: ${cpu}%
+📦 RAM Usage: ${memory} MB
+📶 Ping: ${ping} ms
+
+👨‍💻 Admin: https://www.facebook.com/100071880593545`;
+
+      api.sendMessage({
+        body: msg,
+        attachment: fs.createReadStream(imgPath)
+      }, event.threadID, () => fs.unlinkSync(imgPath));
+
+    } catch (err) {
+      console.error("Uptime Error:", err);
+      api.sendMessage("❌ An error occurred while generating the uptime panel.", event.threadID);
     }
   }
 };
